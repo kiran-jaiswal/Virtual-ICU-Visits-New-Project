@@ -3,13 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Heart, Mail, Lock, User, Eye, EyeOff, Stethoscope, Users, FileText, Phone } from 'lucide-react';
 
-const Register: React.FC = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'family' as 'doctor' | 'family',
+    role: 'family',
     specialization: '',
     patientRelation: '',
     licenseNumber: '',
@@ -22,16 +22,15 @@ const Register: React.FC = () => {
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -71,7 +70,6 @@ const Register: React.FC = () => {
   return (
     <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {/* Header */}
         <div className="text-center">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6">
             <Heart className="h-10 w-10 text-blue-600" />
@@ -81,7 +79,6 @@ const Register: React.FC = () => {
           <p className="text-gray-600">Join our virtual care community</p>
         </div>
 
-        {/* User Type Selector */}
         <div className="bg-gray-100 p-1 rounded-lg flex">
           <button
             type="button"
@@ -109,10 +106,8 @@ const Register: React.FC = () => {
           </button>
         </div>
 
-        {/* Registration Form */}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">
-            {/* Name */}
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
@@ -134,7 +129,6 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -156,7 +150,6 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* Phone */}
             <div>
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
@@ -178,7 +171,6 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* Role-specific fields */}
             {formData.role === 'doctor' ? (
               <>
                 <div>
@@ -248,7 +240,6 @@ const Register: React.FC = () => {
               </div>
             )}
 
-            {/* Password */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
@@ -281,7 +272,6 @@ const Register: React.FC = () => {
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password

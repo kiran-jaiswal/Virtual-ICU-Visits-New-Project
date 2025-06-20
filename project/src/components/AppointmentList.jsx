@@ -1,40 +1,22 @@
 import React, { useState } from 'react';
-import { Calendar, Clock, User, Video, Phone, MessageSquare, Edit, Trash2, Eye, Filter, Search } from 'lucide-react';
+import {
+  Calendar,
+  Clock,
+  User,
+  Video,
+  Phone,
+  MessageSquare,
+  Edit,
+  Trash2,
+  Search
+} from 'lucide-react';
 
-interface Appointment {
-  id: string;
-  patientName: string;
-  doctorName: string;
-  date: string;
-  time: string;
-  duration: number;
-  type: 'video' | 'phone' | 'consultation';
-  status: 'scheduled' | 'completed' | 'cancelled' | 'in-progress';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  notes?: string;
-  familyMembers: string[];
-}
-
-interface AppointmentListProps {
-  appointments: Appointment[];
-  userRole: 'doctor' | 'family';
-  onEdit: (appointment: Appointment) => void;
-  onDelete: (id: string) => void;
-  onJoin: (id: string) => void;
-}
-
-const AppointmentList: React.FC<AppointmentListProps> = ({ 
-  appointments, 
-  userRole, 
-  onEdit, 
-  onDelete, 
-  onJoin 
-}) => {
+const AppointmentList = ({ appointments, userRole, onEdit, onDelete, onJoin }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
       case 'scheduled': return 'text-blue-600 bg-blue-100';
       case 'completed': return 'text-green-600 bg-green-100';
@@ -44,7 +26,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     }
   };
 
-  const getPriorityColor = (priority: string) => {
+  const getPriorityColor = (priority) => {
     switch (priority) {
       case 'urgent': return 'text-red-600 bg-red-100 border-red-200';
       case 'high': return 'text-orange-600 bg-orange-100 border-orange-200';
@@ -54,7 +36,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type) => {
     switch (type) {
       case 'video': return Video;
       case 'phone': return Phone;
@@ -63,31 +45,34 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
     }
   };
 
-  const filteredAppointments = appointments.filter(appointment => {
-    const matchesSearch = appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         appointment.doctorName.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredAppointments = appointments.filter((appointment) => {
+    const matchesSearch =
+      appointment.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      appointment.doctorName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter;
     const matchesType = typeFilter === 'all' || appointment.type === typeFilter;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
-  const isAppointmentToday = (date: string) => {
+  const isAppointmentToday = (date) => {
     const today = new Date().toISOString().split('T')[0];
     return date === today;
   };
 
-  const isAppointmentSoon = (date: string, time: string) => {
+  const isAppointmentSoon = (date, time) => {
     const appointmentDateTime = new Date(`${date}T${time}`);
     const now = new Date();
     const timeDiff = appointmentDateTime.getTime() - now.getTime();
-    return timeDiff > 0 && timeDiff <= 30 * 60 * 1000; // Within 30 minutes
+    return timeDiff > 0 && timeDiff <= 30 * 60 * 1000;
   };
 
-  const canJoinAppointment = (appointment: Appointment) => {
-    return appointment.status === 'scheduled' && 
-           isAppointmentSoon(appointment.date, appointment.time) &&
-           appointment.type === 'video';
+  const canJoinAppointment = (appointment) => {
+    return (
+      appointment.status === 'scheduled' &&
+      isAppointmentSoon(appointment.date, appointment.time) &&
+      appointment.type === 'video'
+    );
   };
 
   return (
@@ -105,7 +90,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
-          
+
           <div className="flex space-x-3">
             <select
               value={statusFilter}
@@ -118,7 +103,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
               <option value="cancelled">Cancelled</option>
               <option value="in-progress">In Progress</option>
             </select>
-            
+
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
@@ -146,7 +131,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
             const TypeIcon = getTypeIcon(appointment.type);
             const isToday = isAppointmentToday(appointment.date);
             const canJoin = canJoinAppointment(appointment);
-            
+
             return (
               <div
                 key={appointment.id}
@@ -165,15 +150,21 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           <h3 className="text-lg font-semibold text-gray-900">
                             {userRole === 'doctor' ? appointment.patientName : appointment.doctorName}
                           </h3>
-                          <p className="text-sm text-gray-600">
-                            {userRole === 'doctor' ? 'Patient' : 'Doctor'}
-                          </p>
+                          <p className="text-sm text-gray-600">{userRole === 'doctor' ? 'Patient' : 'Doctor'}</p>
                         </div>
                         <div className="flex space-x-2">
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(appointment.status)}`}>
+                          <span
+                            className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                              appointment.status
+                            )}`}
+                          >
                             {appointment.status.replace('-', ' ').toUpperCase()}
                           </span>
-                          <span className={`px-3 py-1 text-xs font-medium rounded-full border ${getPriorityColor(appointment.priority)}`}>
+                          <span
+                            className={`px-3 py-1 text-xs font-medium rounded-full border ${getPriorityColor(
+                              appointment.priority
+                            )}`}
+                          >
                             {appointment.priority.toUpperCase()}
                           </span>
                           {isToday && (
@@ -183,7 +174,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           )}
                         </div>
                       </div>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         <div className="flex items-center space-x-2 text-gray-600">
                           <Calendar className="h-4 w-4" />
@@ -197,14 +188,16 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                         </div>
                         <div className="flex items-center space-x-2 text-gray-600">
                           <Clock className="h-4 w-4" />
-                          <span className="text-sm">{appointment.time} ({appointment.duration} min)</span>
+                          <span className="text-sm">
+                            {appointment.time} ({appointment.duration} min)
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2 text-gray-600">
                           <User className="h-4 w-4" />
                           <span className="text-sm">{appointment.familyMembers.length} family member(s)</span>
                         </div>
                       </div>
-                      
+
                       {appointment.familyMembers.length > 0 && (
                         <div className="mb-4">
                           <p className="text-sm font-medium text-gray-700 mb-2">Family Members:</p>
@@ -220,17 +213,15 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           </div>
                         </div>
                       )}
-                      
+
                       {appointment.notes && (
                         <div className="mb-4">
                           <p className="text-sm font-medium text-gray-700 mb-1">Notes:</p>
-                          <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">
-                            {appointment.notes}
-                          </p>
+                          <p className="text-sm text-gray-600 bg-gray-50 p-3 rounded-lg">{appointment.notes}</p>
                         </div>
                       )}
                     </div>
-                    
+
                     <div className="flex flex-col space-y-2 ml-4">
                       {canJoin && (
                         <button
@@ -241,7 +232,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           <span>Join Now</span>
                         </button>
                       )}
-                      
+
                       {appointment.status === 'scheduled' && !canJoin && (
                         <button
                           onClick={() => onEdit(appointment)}
@@ -251,7 +242,7 @@ const AppointmentList: React.FC<AppointmentListProps> = ({
                           <span>Edit</span>
                         </button>
                       )}
-                      
+
                       <button
                         onClick={() => onDelete(appointment.id)}
                         className="flex items-center space-x-2 px-4 py-2 border border-red-300 text-red-600 rounded-lg hover:bg-red-50 transition-colors"

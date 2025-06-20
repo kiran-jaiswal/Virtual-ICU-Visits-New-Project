@@ -1,64 +1,58 @@
 import React, { useState } from 'react';
-import { Bot, Send, Mic, MicOff, Volume2, Brain, Heart, Activity, AlertTriangle, CheckCircle } from 'lucide-react';
+import {
+  Bot, Send, Mic, MicOff, Volume2, Brain
+} from 'lucide-react';
 
-interface Message {
-  id: string;
-  type: 'user' | 'ai' | 'system';
-  content: string;
-  timestamp: string;
-  confidence?: number;
-  suggestions?: string[];
-}
-
-interface AIHealthAssistantProps {
-  userRole: 'doctor' | 'family';
-  patientData?: any;
-}
-
-const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patientData }) => {
-  const [messages, setMessages] = useState<Message[]>([
+const AIHealthAssistant = ({ userRole, patientData }) => {
+  const [messages, setMessages] = useState([
     {
       id: '1',
       type: 'ai',
-      content: `Hello! I'm your AI Health Assistant. I can help ${userRole === 'doctor' ? 'analyze patient data, suggest treatment protocols, and provide clinical insights' : 'answer questions about your loved one\'s condition, explain medical terms, and provide care guidance'}.`,
+      content: `Hello! I'm your AI Health Assistant. I can help ${
+        userRole === 'doctor'
+          ? 'analyze patient data, suggest treatment protocols, and provide clinical insights'
+          : "answer questions about your loved one's condition, explain medical terms, and provide care guidance"
+      }.`,
       timestamp: new Date().toLocaleTimeString(),
       confidence: 95
     }
   ]);
-  
+
   const [inputMessage, setInputMessage] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
 
-  const quickSuggestions = userRole === 'doctor' ? [
-    "Analyze current vital signs",
-    "Suggest medication adjustments",
-    "Risk assessment for complications",
-    "Discharge planning recommendations"
-  ] : [
-    "Explain current condition",
-    "What should I expect?",
-    "How can I help during recovery?",
-    "When will they feel better?"
-  ];
+  const quickSuggestions =
+    userRole === 'doctor'
+      ? [
+          'Analyze current vital signs',
+          'Suggest medication adjustments',
+          'Risk assessment for complications',
+          'Discharge planning recommendations'
+        ]
+      : [
+          'Explain current condition',
+          'What should I expect?',
+          'How can I help during recovery?',
+          'When will they feel better?'
+        ];
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
 
-    const userMessage: Message = {
+    const userMessage = {
       id: Date.now().toString(),
       type: 'user',
       content: inputMessage,
       timestamp: new Date().toLocaleTimeString()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputMessage('');
     setIsTyping(true);
 
-    // Simulate AI response
     setTimeout(() => {
-      const aiResponse: Message = {
+      const aiResponse = {
         id: (Date.now() + 1).toString(),
         type: 'ai',
         content: generateAIResponse(inputMessage, userRole),
@@ -66,46 +60,48 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
         confidence: Math.floor(Math.random() * 20) + 80,
         suggestions: generateSuggestions(inputMessage, userRole)
       };
-      
-      setMessages(prev => [...prev, aiResponse]);
+
+      setMessages((prev) => [...prev, aiResponse]);
       setIsTyping(false);
     }, 2000);
   };
 
-  const generateAIResponse = (input: string, role: string) => {
+  const generateAIResponse = (input, role) => {
+    const lowerInput = input.toLowerCase();
+
     if (role === 'doctor') {
-      if (input.toLowerCase().includes('vital')) {
-        return "Based on the current vital signs, the patient shows stable cardiovascular function with HR 75 bpm (normal range). Blood pressure 120/80 mmHg indicates good hemodynamic stability. Temperature 98.6°F suggests no active infection. Oxygen saturation 96% is within acceptable range but monitor for any decline. Recommend continuing current monitoring protocol.";
+      if (lowerInput.includes('vital')) {
+        return 'Based on the current vital signs, the patient shows stable cardiovascular function with HR 75 bpm (normal range)...';
       }
-      if (input.toLowerCase().includes('medication')) {
-        return "Current medication regimen appears appropriate. Consider adjusting pain management if patient reports discomfort above 4/10. Monitor for drug interactions with new prescriptions. Ensure proper timing of antibiotics to maintain therapeutic levels. Review kidney function before adjusting dosages.";
+      if (lowerInput.includes('medication')) {
+        return 'Current medication regimen appears appropriate. Consider adjusting pain management...';
       }
-      return "I've analyzed the available patient data. The current treatment plan appears appropriate, but I recommend monitoring the following parameters closely. Would you like me to elaborate on any specific aspect?";
+      return 'I’ve analyzed the available patient data. The treatment plan seems appropriate...';
     } else {
-      if (input.toLowerCase().includes('condition')) {
-        return "Your loved one is currently in stable condition. The medical team is closely monitoring their recovery progress. The treatments being provided are helping their body heal properly. It's normal to feel concerned, but the signs are encouraging.";
+      if (lowerInput.includes('condition')) {
+        return 'Your loved one is currently in stable condition...';
       }
-      if (input.toLowerCase().includes('expect')) {
-        return "Recovery typically progresses in stages. In the coming days, you may notice gradual improvements in alertness and comfort levels. The medical team will keep you updated on each milestone. Your presence and support play an important role in their healing process.";
+      if (lowerInput.includes('expect')) {
+        return 'Recovery typically progresses in stages. Expect gradual improvement...';
       }
-      return "I understand your concerns about your loved one. The medical team is providing excellent care, and I'm here to help explain anything you'd like to know about their treatment and recovery process.";
+      return 'I understand your concerns. The care team is closely monitoring the situation...';
     }
   };
 
-  const generateSuggestions = (input: string, role: string) => {
+  const generateSuggestions = (input, role) => {
     if (role === 'doctor') {
-      return ["Review lab results", "Check medication interactions", "Assess discharge readiness"];
+      return ['Review lab results', 'Check medication interactions', 'Assess discharge readiness'];
     } else {
-      return ["Ask about visiting hours", "Learn about care instructions", "Understand the recovery timeline"];
+      return ['Ask about visiting hours', 'Learn about care instructions', 'Understand the recovery timeline'];
     }
   };
 
   const handleVoiceInput = () => {
     setIsListening(!isListening);
-    // Voice recognition would be implemented here
+    // Future voice recognition logic
   };
 
-  const speakMessage = (content: string) => {
+  const speakMessage = (content) => {
     if ('speechSynthesis' in window) {
       const utterance = new SpeechSynthesisUtterance(content);
       utterance.rate = 0.8;
@@ -138,10 +134,7 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
-          >
+          <div key={message.id} className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div
               className={`max-w-xs lg:max-w-md px-4 py-3 rounded-lg ${
                 message.type === 'user'
@@ -152,9 +145,7 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
               }`}
             >
               <div className="flex items-start space-x-2">
-                {message.type === 'ai' && (
-                  <Bot className="h-4 w-4 mt-1 flex-shrink-0" />
-                )}
+                {message.type === 'ai' && <Bot className="h-4 w-4 mt-1 flex-shrink-0" />}
                 <div className="flex-1">
                   <p className="text-sm">{message.content}</p>
                   <div className="flex items-center justify-between mt-2">
@@ -162,9 +153,7 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
                     {message.type === 'ai' && (
                       <div className="flex items-center space-x-2">
                         {message.confidence && (
-                          <span className="text-xs opacity-75">
-                            {message.confidence}% confident
-                          </span>
+                          <span className="text-xs opacity-75">{message.confidence}% confident</span>
                         )}
                         <button
                           onClick={() => speakMessage(message.content)}
@@ -193,7 +182,7 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
           <div className="flex justify-start">
             <div className="bg-purple-100 text-purple-900 px-4 py-3 rounded-lg max-w-xs">
@@ -234,7 +223,7 @@ const AIHealthAssistant: React.FC<AIHealthAssistantProps> = ({ userRole, patient
               type="text"
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
               placeholder="Ask me anything about patient care..."
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />

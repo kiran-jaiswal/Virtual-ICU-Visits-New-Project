@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
-import { FileText, Download, Eye, Plus, Search, Filter, Calendar, User, Stethoscope } from 'lucide-react';
+import {
+  FileText,
+  Download,
+  Eye,
+  Plus,
+  Search,
+  Filter,
+  Calendar,
+  User,
+  Stethoscope
+} from 'lucide-react';
 
-interface MedicalRecord {
-  id: string;
-  patientName: string;
-  doctorName: string;
-  date: string;
-  type: 'consultation' | 'lab-result' | 'imaging' | 'prescription' | 'discharge';
-  title: string;
-  description: string;
-  attachments: string[];
-  status: 'draft' | 'final' | 'reviewed';
-}
-
-interface MedicalRecordsProps {
-  userRole: 'doctor' | 'family';
-}
-
-const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
+const MedicalRecords = ({ userRole }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [typeFilter, setTypeFilter] = useState<string>('all');
-  const [selectedRecord, setSelectedRecord] = useState<MedicalRecord | null>(null);
+  const [typeFilter, setTypeFilter] = useState('all');
+  const [selectedRecord, setSelectedRecord] = useState(null);
 
-  const [records] = useState<MedicalRecord[]>([
+  const [records] = useState([
     {
       id: '1',
       patientName: 'Robert Johnson',
@@ -30,7 +24,8 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
       date: '2024-01-20',
       type: 'consultation',
       title: 'Post-operative Follow-up',
-      description: 'Patient showing good recovery progress. Vital signs stable. Recommended continued monitoring.',
+      description:
+        'Patient showing good recovery progress. Vital signs stable. Recommended continued monitoring.',
       attachments: ['consultation-notes.pdf', 'vital-signs-chart.pdf'],
       status: 'final'
     },
@@ -41,7 +36,8 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
       date: '2024-01-19',
       type: 'lab-result',
       title: 'Blood Work Results',
-      description: 'Complete blood count and metabolic panel results. All values within normal ranges.',
+      description:
+        'Complete blood count and metabolic panel results. All values within normal ranges.',
       attachments: ['blood-work-results.pdf'],
       status: 'reviewed'
     },
@@ -52,7 +48,8 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
       date: '2024-01-18',
       type: 'imaging',
       title: 'Chest X-Ray',
-      description: 'Post-operative chest imaging showing clear lungs and proper surgical site healing.',
+      description:
+        'Post-operative chest imaging showing clear lungs and proper surgical site healing.',
       attachments: ['chest-xray.jpg', 'radiology-report.pdf'],
       status: 'final'
     },
@@ -63,49 +60,67 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
       date: '2024-01-17',
       type: 'prescription',
       title: 'Medication Update',
-      description: 'Updated pain management protocol and antibiotic course.',
+      description:
+        'Updated pain management protocol and antibiotic course.',
       attachments: ['prescription.pdf'],
       status: 'final'
     }
   ]);
 
-  const getTypeColor = (type: string) => {
+  const getTypeColor = (type) => {
     switch (type) {
-      case 'consultation': return 'text-blue-600 bg-blue-100';
-      case 'lab-result': return 'text-green-600 bg-green-100';
-      case 'imaging': return 'text-purple-600 bg-purple-100';
-      case 'prescription': return 'text-orange-600 bg-orange-100';
-      case 'discharge': return 'text-red-600 bg-red-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'consultation':
+        return 'text-blue-600 bg-blue-100';
+      case 'lab-result':
+        return 'text-green-600 bg-green-100';
+      case 'imaging':
+        return 'text-purple-600 bg-purple-100';
+      case 'prescription':
+        return 'text-orange-600 bg-orange-100';
+      case 'discharge':
+        return 'text-red-600 bg-red-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status) => {
     switch (status) {
-      case 'draft': return 'text-yellow-600 bg-yellow-100';
-      case 'final': return 'text-green-600 bg-green-100';
-      case 'reviewed': return 'text-blue-600 bg-blue-100';
-      default: return 'text-gray-600 bg-gray-100';
+      case 'draft':
+        return 'text-yellow-600 bg-yellow-100';
+      case 'final':
+        return 'text-green-600 bg-green-100';
+      case 'reviewed':
+        return 'text-blue-600 bg-blue-100';
+      default:
+        return 'text-gray-600 bg-gray-100';
     }
   };
 
-  const getTypeIcon = (type: string) => {
+  const getTypeIcon = (type) => {
     switch (type) {
-      case 'consultation': return Stethoscope;
-      case 'lab-result': return FileText;
-      case 'imaging': return Eye;
-      case 'prescription': return Plus;
-      case 'discharge': return Download;
-      default: return FileText;
+      case 'consultation':
+        return Stethoscope;
+      case 'lab-result':
+        return FileText;
+      case 'imaging':
+        return Eye;
+      case 'prescription':
+        return Plus;
+      case 'discharge':
+        return Download;
+      default:
+        return FileText;
     }
   };
 
-  const filteredRecords = records.filter(record => {
-    const matchesSearch = record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         record.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         record.doctorName.toLowerCase().includes(searchTerm.toLowerCase());
+  const filteredRecords = records.filter((record) => {
+    const matchesSearch =
+      record.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      record.doctorName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = typeFilter === 'all' || record.type === typeFilter;
-    
+
     return matchesSearch && matchesType;
   });
 
@@ -117,7 +132,9 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
           <div>
             <h2 className="text-2xl font-bold text-gray-900">Medical Records</h2>
             <p className="text-gray-600 mt-1">
-              {userRole === 'doctor' ? 'Patient medical history and documentation' : 'Your medical records and reports'}
+              {userRole === 'doctor'
+                ? 'Patient medical history and documentation'
+                : 'Your medical records and reports'}
             </p>
           </div>
           {userRole === 'doctor' && (
@@ -140,7 +157,7 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
-          
+
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
@@ -168,12 +185,14 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
           ) : (
             filteredRecords.map((record) => {
               const TypeIcon = getTypeIcon(record.type);
-              
+
               return (
                 <div
                   key={record.id}
                   className={`bg-white rounded-xl shadow-sm border transition-all duration-300 hover:shadow-md cursor-pointer ${
-                    selectedRecord?.id === record.id ? 'border-blue-300 bg-blue-50/30' : 'border-gray-200'
+                    selectedRecord?.id === record.id
+                      ? 'border-blue-300 bg-blue-50/30'
+                      : 'border-gray-200'
                   }`}
                   onClick={() => setSelectedRecord(record)}
                 >
@@ -191,12 +210,16 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
                             </p>
                           </div>
                           <div className="flex space-x-2">
-                            <span className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(record.status)}`}>
+                            <span
+                              className={`px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(
+                                record.status
+                              )}`}
+                            >
                               {record.status.toUpperCase()}
                             </span>
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                           <div className="flex items-center space-x-2 text-gray-600">
                             <Calendar className="h-4 w-4" />
@@ -213,9 +236,9 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
                             <span className="text-sm">{record.attachments.length} file(s)</span>
                           </div>
                         </div>
-                        
+
                         <p className="text-gray-700 text-sm mb-4">{record.description}</p>
-                        
+
                         {record.attachments.length > 0 && (
                           <div className="flex flex-wrap gap-2">
                             {record.attachments.map((attachment, index) => (
@@ -251,13 +274,19 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Type</p>
-                    <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getTypeColor(selectedRecord.type)}`}>
+                    <span
+                      className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getTypeColor(
+                        selectedRecord.type
+                      )}`}
+                    >
                       {selectedRecord.type.replace('-', ' ').toUpperCase()}
                     </span>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Date</p>
-                    <p className="text-gray-900">{new Date(selectedRecord.date).toLocaleDateString()}</p>
+                    <p className="text-gray-900">
+                      {new Date(selectedRecord.date).toLocaleDateString()}
+                    </p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Doctor</p>
@@ -265,7 +294,11 @@ const MedicalRecords: React.FC<MedicalRecordsProps> = ({ userRole }) => {
                   </div>
                   <div>
                     <p className="text-sm font-medium text-gray-700">Status</p>
-                    <span className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(selectedRecord.status)}`}>
+                    <span
+                      className={`inline-block px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(
+                        selectedRecord.status
+                      )}`}
+                    >
                       {selectedRecord.status.toUpperCase()}
                     </span>
                   </div>

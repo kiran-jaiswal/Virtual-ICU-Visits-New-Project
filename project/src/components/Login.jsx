@@ -3,17 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Heart, Mail, Lock, Eye, EyeOff, Stethoscope, Users } from 'lucide-react';
 
-const Login: React.FC = () => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [userType, setUserType] = useState<'doctor' | 'family'>('family');
+  const [userType, setUserType] = useState('family');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
@@ -21,7 +21,6 @@ const Login: React.FC = () => {
     try {
       const success = await login(email, password);
       if (success) {
-        // Navigation will be handled by the auth context and protected routes
         if (userType === 'doctor') {
           navigate('/doctor-dashboard');
         } else {
@@ -185,10 +184,7 @@ const Login: React.FC = () => {
           <div className="text-center">
             <p className="text-sm text-gray-600">
               Don't have an account?{' '}
-              <Link
-                to="/register"
-                className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
-              >
+              <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                 Register here
               </Link>
             </p>

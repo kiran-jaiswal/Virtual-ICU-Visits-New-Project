@@ -21,20 +21,11 @@ import {
   MoreVertical
 } from 'lucide-react';
 
-interface Participant {
-  id: string;
-  name: string;
-  role: 'doctor' | 'family' | 'patient';
-  videoEnabled: boolean;
-  audioEnabled: boolean;
-  isOnline: boolean;
-}
-
-const VideoCall: React.FC = () => {
-  const { roomId } = useParams<{ roomId: string }>();
+const VideoCall = () => {
+  const { roomId } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [isVideoEnabled, setIsVideoEnabled] = useState(true);
   const [isAudioEnabled, setIsAudioEnabled] = useState(true);
   const [isCallActive, setIsCallActive] = useState(true);
@@ -44,8 +35,7 @@ const VideoCall: React.FC = () => {
   const [callDuration, setCallDuration] = useState(0);
   const [showSettings, setShowSettings] = useState(false);
 
-  // Mock participants
-  const [participants] = useState<Participant[]>([
+  const [participants] = useState([
     {
       id: '1',
       name: 'Dr. Sarah Johnson',
@@ -87,7 +77,6 @@ const VideoCall: React.FC = () => {
     }
   ]);
 
-  // Timer effect
   useEffect(() => {
     const timer = setInterval(() => {
       setCallDuration(prev => prev + 1);
@@ -96,34 +85,24 @@ const VideoCall: React.FC = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const formatDuration = (seconds: number) => {
+  const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const toggleVideo = () => {
-    setIsVideoEnabled(!isVideoEnabled);
-  };
-
-  const toggleAudio = () => {
-    setIsAudioEnabled(!isAudioEnabled);
-  };
-
+  const toggleVideo = () => setIsVideoEnabled(!isVideoEnabled);
+  const toggleAudio = () => setIsAudioEnabled(!isAudioEnabled);
   const endCall = () => {
     setIsCallActive(false);
     setTimeout(() => {
       navigate(user?.role === 'doctor' ? '/doctor-dashboard' : '/family-dashboard');
     }, 2000);
   };
-
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen);
-  };
+  const toggleFullscreen = () => setIsFullscreen(!isFullscreen);
 
   const sendMessage = () => {
     if (chatMessage.trim()) {
-      // In a real app, send message to other participants
       setChatMessage('');
     }
   };
@@ -145,7 +124,6 @@ const VideoCall: React.FC = () => {
 
   return (
     <div className={`${isFullscreen ? 'fixed inset-0 z-50' : 'min-h-screen'} bg-gray-900 flex flex-col`}>
-      {/* Header */}
       <div className="bg-gray-800 border-b border-gray-700 p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -155,16 +133,12 @@ const VideoCall: React.FC = () => {
               <p className="text-gray-400 text-sm">Room: {roomId} • {formatDuration(callDuration)}</p>
             </div>
           </div>
-          
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-green-400 text-sm">Connected</span>
             </div>
-            <button
-              onClick={toggleFullscreen}
-              className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors"
-            >
+            <button onClick={toggleFullscreen} className="p-2 text-gray-400 hover:text-white hover:bg-gray-700 rounded-lg transition-colors">
               {isFullscreen ? <Minimize className="h-5 w-5" /> : <Maximize className="h-5 w-5" />}
             </button>
           </div>
@@ -172,10 +146,8 @@ const VideoCall: React.FC = () => {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Main Video Area */}
         <div className="flex-1 relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-4 h-full">
-            {/* Main participant video */}
             <div className="relative bg-gray-800 rounded-lg overflow-hidden">
               <div className="aspect-video bg-gradient-to-br from-blue-900 to-blue-800 flex items-center justify-center">
                 {isVideoEnabled ? (
@@ -195,7 +167,6 @@ const VideoCall: React.FC = () => {
               </div>
             </div>
 
-            {/* Other participants */}
             {participants.filter(p => p.id !== user?.id).map((participant) => (
               <div key={participant.id} className="relative bg-gray-800 rounded-lg overflow-hidden">
                 <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center">
@@ -238,62 +209,32 @@ const VideoCall: React.FC = () => {
             ))}
           </div>
 
-          {/* Controls */}
           <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
             <div className="flex items-center space-x-4 bg-gray-800/90 backdrop-blur-sm rounded-full px-6 py-3">
-              <button
-                onClick={toggleAudio}
-                className={`p-3 rounded-full transition-all duration-200 ${
-                  isAudioEnabled
-                    ? 'bg-gray-700 text-white hover:bg-gray-600'
-                    : 'bg-red-600 text-white hover:bg-red-700'
-                }`}
-              >
+              <button onClick={toggleAudio} className={`p-3 rounded-full ${isAudioEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'} text-white`}>
                 {isAudioEnabled ? <Mic className="h-5 w-5" /> : <MicOff className="h-5 w-5" />}
               </button>
-
-              <button
-                onClick={toggleVideo}
-                className={`p-3 rounded-full transition-all duration-200 ${
-                  isVideoEnabled
-                    ? 'bg-gray-700 text-white hover:bg-gray-600'
-                    : 'bg-red-600 text-white hover:bg-red-700'
-                }`}
-              >
+              <button onClick={toggleVideo} className={`p-3 rounded-full ${isVideoEnabled ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'} text-white`}>
                 {isVideoEnabled ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
               </button>
-
-              <button
-                onClick={() => setShowChat(!showChat)}
-                className="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 transition-colors"
-              >
+              <button onClick={() => setShowChat(!showChat)} className="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-600">
                 <MessageSquare className="h-5 w-5" />
               </button>
-
-              <button
-                onClick={() => setShowSettings(!showSettings)}
-                className="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-600 transition-colors"
-              >
+              <button onClick={() => setShowSettings(!showSettings)} className="p-3 rounded-full bg-gray-700 text-white hover:bg-gray-600">
                 <Settings className="h-5 w-5" />
               </button>
-
-              <button
-                onClick={endCall}
-                className="p-3 rounded-full bg-red-600 text-white hover:bg-red-700 transition-all duration-200 transform hover:scale-110"
-              >
+              <button onClick={endCall} className="p-3 rounded-full bg-red-600 text-white hover:bg-red-700 transform hover:scale-110">
                 <PhoneOff className="h-5 w-5" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Chat Sidebar */}
         {showChat && (
           <div className="w-80 bg-gray-800 border-l border-gray-700 flex flex-col">
             <div className="p-4 border-b border-gray-700">
               <h3 className="text-white font-semibold">Chat</h3>
             </div>
-            
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {chatMessages.map((msg) => (
                 <div key={msg.id} className="bg-gray-700 rounded-lg p-3">
@@ -305,7 +246,6 @@ const VideoCall: React.FC = () => {
                 </div>
               ))}
             </div>
-            
             <div className="p-4 border-t border-gray-700">
               <div className="flex space-x-2">
                 <input
@@ -318,7 +258,7 @@ const VideoCall: React.FC = () => {
                 />
                 <button
                   onClick={sendMessage}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   Send
                 </button>
@@ -328,20 +268,15 @@ const VideoCall: React.FC = () => {
         )}
       </div>
 
-      {/* Settings Modal */}
       {showSettings && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-lg p-6 w-96">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-white font-semibold">Call Settings</h3>
-              <button
-                onClick={() => setShowSettings(false)}
-                className="text-gray-400 hover:text-white"
-              >
+              <button onClick={() => setShowSettings(false)} className="text-gray-400 hover:text-white">
                 ×
               </button>
             </div>
-            
             <div className="space-y-4">
               <div>
                 <label className="block text-white text-sm font-medium mb-2">Camera</label>
@@ -350,7 +285,6 @@ const VideoCall: React.FC = () => {
                   <option>External Camera</option>
                 </select>
               </div>
-              
               <div>
                 <label className="block text-white text-sm font-medium mb-2">Microphone</label>
                 <select className="w-full bg-gray-700 text-white rounded-lg px-3 py-2">
@@ -358,7 +292,6 @@ const VideoCall: React.FC = () => {
                   <option>External Microphone</option>
                 </select>
               </div>
-              
               <div>
                 <label className="block text-white text-sm font-medium mb-2">Speaker</label>
                 <select className="w-full bg-gray-700 text-white rounded-lg px-3 py-2">
@@ -367,12 +300,8 @@ const VideoCall: React.FC = () => {
                 </select>
               </div>
             </div>
-            
             <div className="mt-6 flex justify-end">
-              <button
-                onClick={() => setShowSettings(false)}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-              >
+              <button onClick={() => setShowSettings(false)} className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
                 Done
               </button>
             </div>
